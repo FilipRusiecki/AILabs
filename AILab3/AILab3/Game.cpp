@@ -5,7 +5,7 @@
 
 
 Game::Game() :
-	m_window{ sf::VideoMode{ 800U, 600U, 32U }, "SFML Game" },
+	m_window{ sf::VideoMode{ sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height,  sf::VideoMode::getDesktopMode().bitsPerPixel }, "AILab3" },
 	m_exitGame{false} //when true game will exit
 {
 	setupFontAndText(); // load font 
@@ -63,6 +63,45 @@ void Game::processKeys(sf::Event t_event)
 	{
 		m_exitGame = true;
 	}
+	if (sf::Keyboard::Escape == t_event.key.code)
+	{
+		m_exitGame = true;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+	{
+		myWander.alive ^= true;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+	{
+		mySeek.alive ^= true;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+	{
+		myArriveFast.alive ^= true;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
+	{
+		myArriveSlow.alive ^= true;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5))
+	{
+		myFlee.alive ^= true;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6))
+	{
+		myPursue.alive ^= true;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8))
+	{
+		myPlayer.tracerAlive ^= true;
+		myWander.tracerAlive ^= true;
+		mySeek.tracerAlive ^= true;
+		myFlee.tracerAlive ^= true;
+		myArriveFast.tracerAlive ^= true;
+		myArriveSlow.tracerAlive ^= true;
+		myPursue.tracerAlive ^= true;
+
+	}
 }
 
 
@@ -72,41 +111,47 @@ void Game::update(sf::Time t_deltaTime)
 	{
 		m_window.close();
 	}
+	myPlayer.update(t_deltaTime);
+	myWander.update(t_deltaTime);
+	mySeek.update(t_deltaTime, myPlayer);
+	myFlee.update(t_deltaTime, myPlayer);
+	myArriveFast.update(t_deltaTime, myPlayer);
+	myArriveSlow.update(t_deltaTime, myPlayer);
+	myPursue.update(t_deltaTime, myPlayer);
+
 }
 
 
 void Game::render()
 {
 	m_window.clear(sf::Color::Black);
-
+	myPlayer.render(m_window);
+	myWander.render(m_window);
+	mySeek.render(m_window);
+	myFlee.render(m_window);
+	myArriveFast.render(m_window);
+	myArriveSlow.render(m_window);
+	myPursue.render(m_window);
+	m_window.draw(info);
 	m_window.display();
 }
 
 
 void Game::setupFontAndText()
 {
-	if (!m_ArialBlackfont.loadFromFile("ASSETS\\FONTS\\ariblk.ttf"))
+	if (!m_font.loadFromFile("ASSETS\\FONTS\\ariblk.ttf"))
 	{
 		std::cout << "problem loading arial black font" << std::endl;
 	}
-	m_welcomeMessage.setFont(m_ArialBlackfont);
-	m_welcomeMessage.setString("SFML Game");
-	m_welcomeMessage.setStyle(sf::Text::Underlined | sf::Text::Italic | sf::Text::Bold);
-	m_welcomeMessage.setPosition(40.0f, 40.0f);
-	m_welcomeMessage.setCharacterSize(80U);
-	m_welcomeMessage.setOutlineColor(sf::Color::Red);
-	m_welcomeMessage.setFillColor(sf::Color::Black);
-	m_welcomeMessage.setOutlineThickness(3.0f);
+
 
 }
 
 
 void Game::setupSprite()
 {
-	if (!m_logoTexture.loadFromFile("ASSETS\\IMAGES\\SFML-LOGO.png"))
-	{
-		std::cout << "problem loading logo" << std::endl;
-	}
-	m_logoSprite.setTexture(m_logoTexture);
-	m_logoSprite.setPosition(300.0f, 180.0f);
+	info.setFont(m_font);
+	info.setScale(1.0f, 1.0f);
+	info.setString("Press 1: Wander , 2:Seek , 3:ArriveFast , 4: ArriveSlow , 5:Flee , 6:Pursue , 8:TracerLines \n L: player speed = 0\n K: player speed = 2\n J: player speed = 5");
+	info.setPosition(10.0f, 10.0f);
 }

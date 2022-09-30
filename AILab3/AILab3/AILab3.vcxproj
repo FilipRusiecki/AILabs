@@ -19,11 +19,25 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ArriveFast.cpp" />
+    <ClCompile Include="ArriveSlow.cpp" />
+    <ClCompile Include="Flee.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Pursue.cpp" />
+    <ClCompile Include="Seek.cpp" />
+    <ClCompile Include="Wander.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArriveFast.h" />
+    <ClInclude Include="ArriveSlow.h" />
+    <ClInclude Include="Flee.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Pursue.h" />
+    <ClInclude Include="Seek.h" />
+    <ClInclude Include="Wander.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="ASSETS\IMAGES\SFML-LOGO.png">
