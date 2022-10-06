@@ -14,6 +14,12 @@ public:
 	Seek();
 	bool alive = false;
 	bool tracerAlive = false;
+
+
+	sf::RectangleShape leftLine;
+	sf::RectangleShape rightLine;
+	float angleOfSight = 35;
+	sf::Vector2f norm(sf::Vector2f vec);
 private:
 	sf::Font m_font;
 	sf::Text nameTag;

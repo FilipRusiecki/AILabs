@@ -7,13 +7,13 @@ Wander::Wander()
 	setupSprites();
 }
 
-void Wander::update(sf::Time& t_deltaTime)
+void Wander::update(sf::Time& t_deltaTime, Player t_player)
 {
 	if (alive == true)
 	{
 		randomNum();
 		boundry();
-		kinematicWander(t_deltaTime);
+		kinematicWander(t_deltaTime,t_player);
 		WanderLine.clear();
 		sf::Vertex begin{ m_wanderSprite.getPosition(),sf::Color::Yellow };
 		WanderLine.append(begin);
@@ -30,6 +30,9 @@ void Wander::render(sf::RenderWindow& t_window)
 		if (tracerAlive == true)
 		{
 			t_window.draw(WanderLine);
+
+			t_window.draw(leftLine);
+			t_window.draw(rightLine);
 		}
 		t_window.draw(m_wanderSprite);
 		t_window.draw(nameTag);
@@ -102,10 +105,23 @@ void Wander::setupSprites()
 	nameTag.setFont(m_font);
 	nameTag.setScale(0.5f, 0.5f);
 	nameTag.setString("Wander");
+
+	leftLine.setSize({ 200,1 });
+	leftLine.setFillColor(sf::Color::Green);
+	rightLine.setSize({ 200,1 });
+	rightLine.setFillColor(sf::Color::Green);
 }
 
-void Wander::kinematicWander(sf::Time& t_deltaTime)
+sf::Vector2f Wander::norm(sf::Vector2f vec)
 {
+	float length = sqrt((vec.x * vec.x) + (vec.y * vec.y));
+	return { vec.x / length, vec.y / length };
+}
+
+void Wander::kinematicWander(sf::Time& t_deltaTime, Player t_player)
+{
+	sf::Vector2f playerpos = t_player.m_playerSprite.getPosition();
+	sf::Vector2f mypos = m_wanderSprite.getPosition();
 
 	angle = m_wanderSprite.getRotation();
 	angle = angle + randomInt;
@@ -127,9 +143,45 @@ void Wander::kinematicWander(sf::Time& t_deltaTime)
 	vel.y = speed * -cos(angle * t_deltaTime.asMilliseconds() / 1000);
 	float squareAns = sqrt((vel.x * vel.x) + (vel.y * vel.y));
 	sf::Vector2f normalisedVelocity = vel / squareAns;
-	m_wanderSprite.move(vel);
+	m_wanderSprite.move(normalisedVelocity);
 	m_wanderSprite.setRotation(angle);
 	radius.move(vel);
+
+
+
+	//vision cone(same for all my npcs)
+	angleOfSight = 35.0f;
+
+	leftLine.setRotation(m_wanderSprite.getRotation() - 90 - angleOfSight);
+	rightLine.setRotation(m_wanderSprite.getRotation() - 90 + angleOfSight);
+	leftLine.setPosition(m_wanderSprite.getPosition());
+	rightLine.setPosition(m_wanderSprite.getPosition());
+
+	sf::Vector2f orientation = { std::cos((pi / 180) * m_wanderSprite.getRotation() - 90),std::sin((pi / 180) * m_wanderSprite.getRotation() - 90) };
+	sf::Vector2f distance = playerpos - mypos;
+	distance = norm(distance);
+
+	float dotProduct = (orientation.x * distance.x) + (orientation.y * distance.y);
+
+	if (dotProduct > std::cos(angleOfSight * 2))
+	{
+		if (sqrt((playerpos.x - mypos.x) * (playerpos.x - mypos.x) + (playerpos.y - mypos.y) * (playerpos.y - mypos.y)) <= 200.0f)
+		{
+			leftLine.setFillColor(sf::Color::Red);
+			rightLine.setFillColor(sf::Color::Red);
+		}
+
+		else
+		{
+			leftLine.setFillColor(sf::Color::Yellow);
+			rightLine.setFillColor(sf::Color::Yellow);
+		}
+	}
+	else
+	{
+		leftLine.setFillColor(sf::Color::Yellow);
+		rightLine.setFillColor(sf::Color::Yellow);
+	}
 }
 
 

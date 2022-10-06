@@ -11,9 +11,13 @@ public:
 
 	void update(sf::Time& t_deltaTime, Player& t_player);
 	void render(sf::RenderWindow& t_window);
+	sf::Vector2f norm(sf::Vector2f vec);
 	ArriveFast();
 	bool alive = false;
 	bool tracerAlive = false;
+	sf::RectangleShape leftLine;
+	sf::RectangleShape rightLine;
+	float angleOfSight = 35;
 private:
 	sf::Font m_font;
 	sf::Text nameTag;
@@ -31,6 +35,8 @@ private:
 	void setupSprites();
 	void seek(sf::Time& t_deltaTime, Player& t_player);
 
+	float orientation;
+	
 
 };
 

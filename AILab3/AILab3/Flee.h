@@ -15,6 +15,11 @@ public:
 	Flee();
 	bool alive = false;
 	bool tracerAlive = false;
+	void flee(sf::Time& t_deltaTime, Player& t_player);
+	sf::RectangleShape leftLine;
+	sf::RectangleShape rightLine;
+	float angleOfSight = 35;
+	sf::Vector2f norm(sf::Vector2f vec);
 private:
 	sf::Font m_font;
 	sf::Text nameTag;
@@ -30,7 +35,6 @@ private:
 	sf::Vector2f distanceVec;
 	sf::Vector2f vel;
 	void setupSprites();
-	void flee(sf::Time& t_deltaTime, Player& t_player);
 	void boundry();
 
 };

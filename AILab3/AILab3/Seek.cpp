@@ -6,6 +6,12 @@ Seek::Seek()
 	setupSprites();
 }
 
+sf::Vector2f Seek::norm(sf::Vector2f vec)
+{
+	float length = sqrt((vec.x * vec.x) + (vec.y * vec.y));
+	return { vec.x / length, vec.y / length };
+}
+
 void Seek::update(sf::Time& t_deltaTime, Player& t_player)
 {
 	if (alive == true)
@@ -22,6 +28,9 @@ void Seek::render(sf::RenderWindow& t_window)
 		if (tracerAlive == true)
 		{
 			t_window.draw(LineToPlayer);
+
+			t_window.draw(leftLine);
+			t_window.draw(rightLine);
 		}
 		t_window.draw(m_seekSprite);
 		t_window.draw(nameTag);
@@ -55,6 +64,13 @@ void Seek::setupSprites()
 	nameTag.setFont(m_font);
 	nameTag.setScale(0.5f, 0.5f);
 	nameTag.setString("Seek");
+
+
+
+	leftLine.setSize({ 200,1 });
+	leftLine.setFillColor(sf::Color::Green);
+	rightLine.setSize({ 200,1 });
+	rightLine.setFillColor(sf::Color::Green);
 }
 
 void Seek::seek(sf::Time& t_deltaTime, Player& t_player)
@@ -79,6 +95,42 @@ void Seek::seek(sf::Time& t_deltaTime, Player& t_player)
 	LineToPlayer.append(begin);
 	sf::Vertex end{ playerpos, sf::Color::Red };
 	LineToPlayer.append(end);
+
+
+
+	//vision cone(same for all my npcs)
+	angleOfSight = 35.0f;
+
+	leftLine.setRotation(m_seekSprite.getRotation() - 90 - angleOfSight);
+	rightLine.setRotation(m_seekSprite.getRotation() - 90 + angleOfSight);
+	leftLine.setPosition(m_seekSprite.getPosition());
+	rightLine.setPosition(m_seekSprite.getPosition());
+
+	sf::Vector2f orientation = { std::cos((pi / 180) * m_seekSprite.getRotation() - 90),std::sin((pi / 180) * m_seekSprite.getRotation() - 90) };
+	sf::Vector2f distance = playerpos - mypos;
+	distance = norm(distance);
+
+	float dotProduct = (orientation.x * distance.x) + (orientation.y * distance.y);
+
+	if (dotProduct > std::cos(angleOfSight * 2))
+	{
+		if (sqrt((playerpos.x - mypos.x) * (playerpos.x - mypos.x) + (playerpos.y - mypos.y) * (playerpos.y - mypos.y)) <= 200.0f)
+		{
+			leftLine.setFillColor(sf::Color::Red);
+			rightLine.setFillColor(sf::Color::Red);
+		}
+
+		else
+		{
+			leftLine.setFillColor(sf::Color::Yellow);
+			rightLine.setFillColor(sf::Color::Yellow);
+		}
+	}
+	else
+	{
+		leftLine.setFillColor(sf::Color::Yellow);
+		rightLine.setFillColor(sf::Color::Yellow);
+	}
 }
 
 

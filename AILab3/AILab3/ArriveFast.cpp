@@ -22,11 +22,17 @@ void ArriveFast::render(sf::RenderWindow& t_window)
 		if (tracerAlive == true)
 		{
 			t_window.draw(LineToPlayer);
+		
+			t_window.draw(leftLine);
+			t_window.draw(rightLine);
 		}
 		t_window.draw(m_arrvieSprite);
 		t_window.draw(nameTag);
+
 	}
 }
+
+
 
 
 
@@ -55,7 +61,15 @@ void ArriveFast::setupSprites()
 	nameTag.setFont(m_font);
 	nameTag.setScale(0.5f, 0.5f);
 	nameTag.setString("ArriveFast");
+
+
+	leftLine.setSize({ 200,1 });
+	leftLine.setFillColor(sf::Color::Green);
+	rightLine.setSize({ 200,1 });
+	rightLine.setFillColor(sf::Color::Green);
 }
+
+
 
 void ArriveFast::seek(sf::Time& t_deltaTime, Player& t_player)
 {
@@ -67,6 +81,8 @@ void ArriveFast::seek(sf::Time& t_deltaTime, Player& t_player)
 	distance = sqrtf(vel.x * vel.x + vel.y * vel.y);
 	distanceVec = sf::Vector2f{ vel.x / distance , vel.y / distance };
 	vel = distanceVec * maxSpeed;
+	sf::Vector2f normalisedVelocity = { vel.x / distance ,vel.y / distance };
+	//orientation = getNewOrientation(orientation, normalisedVelocity);
 	if (distance > t_player.radiusF)
 	{
 		std::cout << "		SEEKING PLAYER			" << std::endl;
@@ -92,6 +108,46 @@ void ArriveFast::seek(sf::Time& t_deltaTime, Player& t_player)
 	GetProperRot = (atan2(dy, dx)) * 180 / pi;
 	rotation = GetProperRot - 90;
 	m_arrvieSprite.setRotation(rotation);
+
+
+
+
+
+
+	//vision cone(same for all my npcs)
+	angleOfSight = 35.0f;
+
+	leftLine.setRotation(m_arrvieSprite.getRotation() - 90 - angleOfSight);
+	rightLine.setRotation(m_arrvieSprite.getRotation() - 90 + angleOfSight);
+	leftLine.setPosition(m_arrvieSprite.getPosition());
+	rightLine.setPosition(m_arrvieSprite.getPosition());
+
+	sf::Vector2f orientation = { std::cos((pi / 180) * m_arrvieSprite.getRotation() -90),std::sin((pi / 180) * m_arrvieSprite.getRotation()-90)};
+	sf::Vector2f distance = playerpos - mypos;
+	distance = norm(distance);
+
+	float dotProduct = (orientation.x * distance.x) + (orientation.y * distance.y);
+
+	if (dotProduct > std::cos(angleOfSight * 2))
+	{
+		if (sqrt((playerpos.x - mypos.x) * (playerpos.x - mypos.x) + (playerpos.y - mypos.y) * (playerpos.y - mypos.y)) <= 200.0f)
+		{
+			leftLine.setFillColor(sf::Color::Red);
+			rightLine.setFillColor(sf::Color::Red);
+		}
+
+		else
+		{
+			leftLine.setFillColor(sf::Color::Yellow);
+			rightLine.setFillColor(sf::Color::Yellow);
+		}
+	}
+	else
+	{
+		leftLine.setFillColor(sf::Color::Yellow);
+		rightLine.setFillColor(sf::Color::Yellow);
+	}
+
 	std::cout << "				Seek angle: " << rotation << std::endl;
 	m_arrvieSprite.move(vel);
 	LineToPlayer.clear();
@@ -102,3 +158,8 @@ void ArriveFast::seek(sf::Time& t_deltaTime, Player& t_player)
 }
 
 
+sf::Vector2f ArriveFast::norm(sf::Vector2f vec)
+{
+	float length = sqrt((vec.x * vec.x) + (vec.y * vec.y));
+	return { vec.x / length, vec.y / length };
+}
