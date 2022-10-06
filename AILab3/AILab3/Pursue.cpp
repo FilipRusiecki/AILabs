@@ -59,7 +59,7 @@ void Pursue::setupSprites()
 
 void Pursue::pursue(sf::Time& t_deltaTime, Player& t_player)
 {
-	sf::Vector2f playerpos = t_player.m_playerSprite.getPosition();
+	sf::Vector2f playerpos = { t_player.linePoint.x,t_player.linePoint.y };
 	sf::Vector2f mypos = m_pursueSprite.getPosition();
 
 	vel = playerpos - mypos; //Velocity = target.position - my.position
