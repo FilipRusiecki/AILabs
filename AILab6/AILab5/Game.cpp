@@ -72,7 +72,7 @@ void Game::update(sf::Time t_deltaTime)
 		m_window.close();
 	}
 	mousePosition = sf::Mouse::getPosition(m_window);
-	std::cout << "X: " << mousePosition.x <<"     Y: "<< mousePosition.y << std::endl;
+	//std::cout << "X: " << mousePosition.x <<"     Y: "<< mousePosition.y << std::endl;
 	m_grid.update(m_window);
 }
 

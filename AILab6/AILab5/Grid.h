@@ -30,8 +30,6 @@ public:
 	int m_previousCellId{ -1 };
 	bool m_marked = false;
 	bool m_isPassable = true;
-	bool m_isPuddle = false;
-	bool m_isWall = false;
 
 	int m_centreX = 0;
 	int m_centreY = 0;
@@ -49,6 +47,7 @@ public:
 	Cell(sf::Vector2f t_position, int t_cellID, sf::Font& t_font);
 	Cell* previous() const;
 	int weight() const;
+
 	void setPrevious(Cell* previous)
 	{
 		m_previous = previous;
@@ -65,6 +64,7 @@ public:
 	sf::Font m_fonts;
 	void addCost(int m_cost);
 	bool m_showCost = false;
+	int getCost();
 
 	sf::RectangleShape m_shape;
 
@@ -78,6 +78,8 @@ public:
 	~Grid();
 	int numberOfNonTraversals = 200;
 	sf::RectangleShape m_notTraversal[200];
+	sf::RectangleShape m_pathITtake[200];
+	std::vector<int> m_pathFound;
 	Cell& returnCell(int t_id);
 
 	bool isStartPosSelected;
@@ -88,13 +90,14 @@ public:
 	void reset();
 	void initialiseMap();
 	void update(sf::RenderWindow& t_window);
-	void makeStratPos(sf::RenderWindow& t_window);
-	void makeEndPos(sf::RenderWindow& t_window);
+	int makeStratPos(sf::RenderWindow& t_window);
+	int makeEndPos(sf::RenderWindow& t_window);
 	void makeCost();
 	void verticalCells(int t_point, int t_row, int t_cost);
 	void horizontalCells(int t_point, int t_col, int t_cost);
 	void setCost(int t_p, int t_col, int t_cal, int t_cost);
 	void notTraversalsCost();
+	void callAstar(int t_start, int t_end);
 	void render(sf::RenderWindow& t_window);
 	void aStar(Cell* start, Cell* dest);
 	Cell* findCellPoint(sf::Vector2f point);

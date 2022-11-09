@@ -5,7 +5,7 @@ class AStarComparer
 public:
 	bool operator()(Cell* t_n1, Cell* t_n2) const
 	{
-		return (t_n1->m_h + t_n1->m_pathCost) > (t_n2->m_h + t_n2->m_pathCost);
+		return (t_n1->getCost() + t_n1->myCost) > (t_n2->getCost() + t_n2->myCost);
 
 	}
 };
@@ -69,7 +69,7 @@ void Cell::render(sf::RenderWindow& t_window)
 void Cell::addCost(int m_cost)
 {
 	myCost = m_cost;
-	std::cout << m_cost << std::endl;
+//	std::cout << m_cost << std::endl;
 	
 
 	if (myCost != -1)
@@ -85,6 +85,12 @@ void Cell::addCost(int m_cost)
 		m_showCost = false;
 	}
 }
+
+int Cell::getCost()
+{
+	return myCost;
+}
+
 
 void Cell::addNeighbour(int t_cellID) // adding a cell id to the neighbours
 {
@@ -178,8 +184,6 @@ void Grid::initialiseMap()
 			m_cellId[count].setFillColor(sf::Color::White);
 			m_cellId[count].setString(std::to_string(count));
 			m_cellId[count].setPosition(cellPositions);*/
-
-	
 			m_cellsArray.push_back(cell);// pushing back the cell
 		}
 	}
@@ -191,12 +195,16 @@ void Grid::initialiseMap()
 		randomCellId = rand() % 2500;
 		m_notTraversal[index].setSize(sf::Vector2f(18.0f, 18.0f));
 		m_notTraversal[index].setFillColor(sf::Color::Black);
+
+		m_pathITtake[index].setSize(sf::Vector2f(18.0f, 18.0f));
+		m_pathITtake[index].setFillColor(sf::Color::Yellow);
+
 		m_notTraversal[index].setPosition((m_cellsArray.at(randomCellId).m_shape.getPosition()));
 		m_cellsArray.at(randomCellId).setMarked(true);
 	}
 
 
-	for (int i = 0; i < 2500; i++) // 40 * 40 = 1600
+	for (int i = 0; i < 2500; i++) // 50 * 50 = 2500
 	{
 		int posY = i / 50;
 		int posX = i % 50;
@@ -213,7 +221,7 @@ void Grid::update(sf::RenderWindow& t_window) // update method
 	makeEndPos(t_window);
 }
 
-void Grid::makeStratPos(sf::RenderWindow& t_window)
+int Grid::makeStratPos(sf::RenderWindow& t_window)
 {
 	if (isStartPosSelected == false )
 	{
@@ -228,12 +236,12 @@ void Grid::makeStratPos(sf::RenderWindow& t_window)
 				m_cellsArray.at(id).m_shape.setFillColor(sf::Color::White);
 				isStartPosSelected = true;
 				startPointId = id;
+				return startPointId;
 			}
 		}
 	}
 }
-
-void Grid::makeEndPos(sf::RenderWindow& t_window)
+int Grid::makeEndPos(sf::RenderWindow& t_window)
 {
 	if (isEndPosSelected == false)
 	{
@@ -245,15 +253,18 @@ void Grid::makeEndPos(sf::RenderWindow& t_window)
 			id += xPos;
 			if (m_cellsArray.at(id).marked() == false)
 			{
-				m_cellsArray.at(id).m_shape.setFillColor(sf::Color::Blue);
+			
 				isEndPosSelected = true;
 				endPointId = id;
-				for (int i = 0; i < 2500; i++) // 40 * 40 = 1600
+				for (int i = 0; i < 2500; i++) // 50 * 50 = 2500
 				{
 				  m_cellsArray[i].drawCost = true;
+				  m_cellsArray[i].m_isPassable = true;
 				}
 				makeCost();
 				notTraversalsCost();
+				callAstar(startPointId, endPointId);
+				return endPointId;
 			}
 		}
 	}
@@ -348,8 +359,31 @@ void Grid::notTraversalsCost()
 
 			m_cellsArray[i].addCost(10000);
 			m_cellsArray[i].drawCost = false;
+			m_cellsArray[i].m_isPassable = false;
 		}
+	}
+}
 
+void Grid::callAstar(int t_start, int t_end)
+{
+	Cell* start;
+	Cell* end;
+	start = &returnCell(t_start);
+	end = &returnCell(t_end);
+	aStar(start,end);
+	int i = 0;
+	int index = end->m_id;
+	m_pathITtake[i].setPosition(m_cellsArray.at(index).m_shape.getPosition());
+	if (m_pathFound.empty() == true)
+	{
+		m_pathFound.push_back(index);
+		while (m_cellsArray.at(index).m_previous != nullptr)
+		{
+			m_pathFound.push_back(m_cellsArray.at(index).m_previous->m_id);
+			m_pathITtake[i].setPosition(m_cellsArray.at(index).m_shape.getPosition());
+			index = m_cellsArray.at(index).m_previous->m_id;
+			i++;
+		}
 	}
 }
 std::vector<Cell>& Grid::returnAllCells() // returning all the cells
@@ -377,18 +411,18 @@ void Grid::aStar(Cell* start, Cell* dest)
 		int xTwo = goal->m_centreX;
 		int yTwo = goal->m_centreY;
 
-		m_cellsArray[i].m_h = abs(xTwo - xOne) + abs(yTwo - yOne);  //Calculate h[v]
+		//m_cellsArray[i].m_h = abs(xTwo - xOne) + abs(yTwo - yOne);  //Calculate h[v]
 
-		m_cellsArray[i].m_pathCost = dist / 10;  //Initialise g[v] to infinity
+		m_cellsArray[i].myCost = dist / 10;  //Initialise g[v] to infinity
 		m_cellsArray[i].setPrevious(nullptr);
 		m_cellsArray[i].setMarked(false);
-
+		
 
 	}
 
 	if (goal != nullptr && start != nullptr)
 	{
-		start->m_pathCost = 0; //Initialise g[start] to 0
+		start->myCost = 0; //Initialise g[start] to 0
 		start->setMarked(true); //Mark(start)
 		pq.push(start); //Add start to pq
 
@@ -407,34 +441,21 @@ void Grid::aStar(Cell* start, Cell* dest)
 					float weightOfArc = 0;
 					float distToChild = 0;
 
-					for (int diagId : mychild->m_diagonalList)
-					{
-						if (diagId == pq.top()->m_id)
-						{
-							weightOfArc = 1.44;
-						}
-					}
+					weightOfArc = mychild->weight(); //g(child)
 
-					if (weightOfArc == 0)
-					{
-						weightOfArc = mychild->weight(); //g(child)
+					distToChild = (weightOfArc + pq.top()->myCost);
 
-					}
-
-					if (mychild->m_isPuddle == true)
+					if (distToChild < mychild->myCost && mychild->m_isPassable == true ) //If ( distToChild < f(child) )
 					{
-						weightOfArc = 1.5f;//Add child to the pq
-					}
-					if (mychild->m_isWall == true)
-					{
-						weightOfArc = 10.0f;//Add child to the pq
-					}
-					distToChild = (weightOfArc + pq.top()->m_pathCost);
-
-					if (distToChild < mychild->m_pathCost) //If ( distToChild < f(child) )
-					{
-						mychild->m_pathCost = distToChild; //let f[child] = distToChild
+						mychild->myCost = distToChild; //let f[child] = distToChild
 						mychild->setPrevious(pq.top()); //Set previous pointer of child to pq.top()
+							//mychild->m_shape.setFillColor(sf::Color::Red);						//uncomment to see how it expands
+
+						if (mychild == goal)
+						{
+							std::cout << "hewo" << std::endl;
+						}
+
 					} //End if
 					if (mychild->marked() == false) //If (notMarked(child))
 					{
@@ -444,9 +465,8 @@ void Grid::aStar(Cell* start, Cell* dest)
 							pq.push(mychild);//Add child to the pq
 						}
 						mychild->setMarked(true); //Mark Child
-
+						
 					} //end if
-
 				}
 
 			}//end for
@@ -472,6 +492,7 @@ void Grid::render(sf::RenderWindow& t_window) // rendering the grid
 	for (int index = 0; index < numberOfNonTraversals; index++)
 	{
 		t_window.draw(m_notTraversal[index]);
+		t_window.draw(m_pathITtake[index]);
 	}
 	for (int index = 0; index < 2500; index++)
 	{
