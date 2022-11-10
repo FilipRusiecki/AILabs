@@ -78,7 +78,7 @@ void Cell::addCost(int m_cost)
 	if (myCost != -1)
 	{
 		m_cellcost.setPosition(m_shape.getPosition());
-		m_cellcost.setCharacterSize(10U);
+		m_cellcost.setCharacterSize(8);
 		m_cellcost.setString(std::to_string(m_cost));
 		
 		m_showCost = true;
@@ -229,6 +229,7 @@ void Grid::update(sf::RenderWindow& t_window) // update method
 {
 	makeStratPos(t_window);
 	makeEndPos(t_window);
+
 }
 
 int Grid::makeStratPos(sf::RenderWindow& t_window)
@@ -273,8 +274,10 @@ int Grid::makeEndPos(sf::RenderWindow& t_window)
 				}
 				makeCost();
 				notTraversalsCost();
-				callAstar(startPointId, endPointId);
+
 				generateHeatMap();
+				
+				callAstar(startPointId, endPointId);
 				return endPointId;
 			}
 		}
@@ -296,6 +299,7 @@ void Grid::makeCost()
 		setCost(endPointId, -50, +1, cost);
 		setCost(endPointId, +50, -1, cost);
 		setCost(endPointId, +50, +1, cost);
+		
 	}
 }
 
@@ -378,14 +382,16 @@ void Grid::notTraversalsCost()
 
 void Grid::generateHeatMap()
 {
+	
+
 	for (int i = 0; i < 2500; i++)
 	{
 		if (m_cellsArray.at(i).m_isPassable == true)
 		{
 			if (m_cellsArray.at(i).myPath == false)
 			{
-				sf::Vector3f colourValue = { 0.0f ,0.0f,30.0f + (m_cellsArray.at(i).myCost * 5) };
-				if (colourValue.z > 100)
+				sf::Vector3f colourValue = { 0.0f,0.0f, 255.0f - (m_cellsArray.at(i).getCost() * 8) }; //{ 0.0f ,0.0f, 50.0f + (m_cellsArray.at(i).myCost * 8) };
+				if (colourValue.z < 100)
 				{
 					colourValue.z = 100;
 				}
@@ -417,6 +423,7 @@ void Grid::callAstar(int t_start, int t_end)
 			i++;
 		}
 	}
+	
 }
 
 std::vector<Cell>& Grid::returnAllCells() // returning all the cells
@@ -522,16 +529,16 @@ Cell* Grid::findCellPoint(sf::Vector2f point)
 
 void Grid::render(sf::RenderWindow& t_window) // rendering the grid
 {
-	for (int index = 0; index < numberOfNonTraversals; index++)
-	{
-		t_window.draw(m_notTraversal[index]);
-		t_window.draw(m_pathITtake[index]);
-	}
+
 	for (int index = 0; index < 2500; index++)
 	{
 		m_cellsArray.at(index).render(t_window,cPress);
 		//t_window.draw(m_cellsArray.at(index).m_cellcost);
 		//t_window.draw(m_cellId[index]);
 	}
-
+	for (int index = 0; index < numberOfNonTraversals; index++)
+	{
+		t_window.draw(m_notTraversal[index]);
+		t_window.draw(m_pathITtake[index]);
+	}
 }
