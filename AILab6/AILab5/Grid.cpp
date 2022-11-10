@@ -57,12 +57,15 @@ void Cell::setMarked(bool t_marked) //bool that is checking if the cell is marke
 	m_marked = t_marked;
 }
 
-void Cell::render(sf::RenderWindow& t_window)
+void Cell::render(sf::RenderWindow& t_window, bool t_cpress)
 {
 	t_window.draw(m_shape);
 	if (drawCost == true)
 	{
-		t_window.draw(m_cellcost);
+		if (t_cpress == true)
+		{
+			t_window.draw(m_cellcost);
+		}
 	}
 }
 
@@ -91,6 +94,13 @@ int Cell::getCost()
 	return myCost;
 }
 
+void Cell::setColor(sf::Vector3f t_RGBValue)
+{
+	sf::Uint8 red = t_RGBValue.x;
+	sf::Uint8 green = t_RGBValue.y;
+	sf::Uint8 blue = t_RGBValue.z;
+	m_shape.setFillColor(sf::Color{ red, green ,blue });
+}
 
 void Cell::addNeighbour(int t_cellID) // adding a cell id to the neighbours
 {
@@ -264,6 +274,7 @@ int Grid::makeEndPos(sf::RenderWindow& t_window)
 				makeCost();
 				notTraversalsCost();
 				callAstar(startPointId, endPointId);
+				generateHeatMap();
 				return endPointId;
 			}
 		}
@@ -360,6 +371,26 @@ void Grid::notTraversalsCost()
 			m_cellsArray[i].addCost(10000);
 			m_cellsArray[i].drawCost = false;
 			m_cellsArray[i].m_isPassable = false;
+			
+		}
+	}
+}
+
+void Grid::generateHeatMap()
+{
+	for (int i = 0; i < 2500; i++)
+	{
+		if (m_cellsArray.at(i).m_isPassable == true)
+		{
+			if (m_cellsArray.at(i).myPath == false)
+			{
+				sf::Vector3f colourValue = { 0.0f ,0.0f,30.0f + (m_cellsArray.at(i).myCost * 5) };
+				if (colourValue.z > 100)
+				{
+					colourValue.z = 100;
+				}
+				m_cellsArray.at(i).setColor(colourValue);
+			}
 		}
 	}
 }
@@ -381,11 +412,13 @@ void Grid::callAstar(int t_start, int t_end)
 		{
 			m_pathFound.push_back(m_cellsArray.at(index).m_previous->m_id);
 			m_pathITtake[i].setPosition(m_cellsArray.at(index).m_shape.getPosition());
+			m_cellsArray.at(index).myPath = true;
 			index = m_cellsArray.at(index).m_previous->m_id;
 			i++;
 		}
 	}
 }
+
 std::vector<Cell>& Grid::returnAllCells() // returning all the cells
 {
 	return m_cellsArray;
@@ -496,7 +529,7 @@ void Grid::render(sf::RenderWindow& t_window) // rendering the grid
 	}
 	for (int index = 0; index < 2500; index++)
 	{
-		m_cellsArray.at(index).render(t_window);
+		m_cellsArray.at(index).render(t_window,cPress);
 		//t_window.draw(m_cellsArray.at(index).m_cellcost);
 		//t_window.draw(m_cellId[index]);
 	}

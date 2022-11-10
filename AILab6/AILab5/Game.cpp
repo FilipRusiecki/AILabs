@@ -61,7 +61,11 @@ void Game::processMouse(sf::Event t_event)
 {
 }
 void Game::processKeys(sf::Event t_event)
-{
+{ 
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+	{
+		m_grid.cPress ^= true;
+	}
 }
 
 

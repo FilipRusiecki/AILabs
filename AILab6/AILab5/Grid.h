@@ -58,14 +58,16 @@ public:
 	int returnID() const {
 		return m_id;
 	}
-	void render(sf::RenderWindow& t_window);
+	void render(sf::RenderWindow& t_window, bool t_cpress);
 
 	sf::Text m_cellcost;
 	sf::Font m_fonts;
 	void addCost(int m_cost);
 	bool m_showCost = false;
-	int getCost();
+	bool myPath = false;
 
+	int getCost();
+	void setColor(sf::Vector3f t_RGBValue);
 	sf::RectangleShape m_shape;
 
 	std::vector<int> m_neighbours;
@@ -79,9 +81,10 @@ public:
 	int numberOfNonTraversals = 200;
 	sf::RectangleShape m_notTraversal[200];
 	sf::RectangleShape m_pathITtake[200];
+	
 	std::vector<int> m_pathFound;
 	Cell& returnCell(int t_id);
-
+	bool cPress = false;
 	bool isStartPosSelected;
 	bool isEndPosSelected;
 	int endPointId;
@@ -100,6 +103,7 @@ public:
 	void callAstar(int t_start, int t_end);
 	void render(sf::RenderWindow& t_window);
 	void aStar(Cell* start, Cell* dest);
+	void generateHeatMap();
 	Cell* findCellPoint(sf::Vector2f point);
 
 	std::vector<Cell>& returnAllCells();
