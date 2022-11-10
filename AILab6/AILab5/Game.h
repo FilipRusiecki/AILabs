@@ -3,6 +3,7 @@
 #define GAME_HPP
 #include <SFML/Graphics.hpp>
 #include "Grid.h"
+
 class Game
 {
 public:
@@ -11,6 +12,7 @@ public:
 	void run();
 	Grid m_grid;
 	sf::Vector2i mousePosition;
+
 private:
 	void processEvents();
 	void processKeys(sf::Event t_event);

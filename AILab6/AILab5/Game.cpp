@@ -9,6 +9,9 @@ Game::Game() :
 	m_exitGame{ false } //when true game will exit
 {
 
+	
+
+	
 }
 
 

@@ -17,7 +17,6 @@
 #include <queue>
 #include <functional>
 #include <SFML/Graphics.hpp>
-
 #include <stack>
 
 
@@ -81,7 +80,7 @@ public:
 	int numberOfNonTraversals = 200;
 	sf::RectangleShape m_notTraversal[200];
 	sf::RectangleShape m_pathITtake[200];
-	
+	bool resets = false;
 	std::vector<int> m_pathFound;
 	Cell& returnCell(int t_id);
 	bool cPress = false;
@@ -91,6 +90,7 @@ public:
 	int startPointId;
 	void neighbours(int t_row, int t_col, std::vector<Cell>& t_cells, int t_current);
 	void reset();
+	void resetPoints();
 	void initialiseMap();
 	void update(sf::RenderWindow& t_window);
 	int makeStratPos(sf::RenderWindow& t_window);

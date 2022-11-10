@@ -112,7 +112,8 @@ Grid::Grid()
 {
 	
 	initialiseMap();
-
+	/*Cell* goal = findCellPoint(t_player.getPosition());
+	callAstar();*/
 }
 
 Grid::~Grid()
@@ -162,6 +163,19 @@ void Grid::reset()
 
 }
 
+void Grid::resetPoints()
+{
+	//isStartPosSelected = false;
+	isEndPosSelected = false;
+	for (int i = 0; i < 200; i++)
+	{
+		m_pathITtake[i].setPosition(0,0);
+		m_cellsArray.at(i).myPath = false;
+	}
+	m_pathFound.clear();
+	startPointId = 0;
+}
+
 void Grid::initialiseMap()
 {
 	srand(time(NULL));
@@ -169,7 +183,6 @@ void Grid::initialiseMap()
 	if (!m_font.loadFromFile("Assets/Fonts/ariblk.ttf"))
 	{
 		std::cout << "error with font file file";
-	
 	}
 	
 	sf::Vector2f cellPositions{0,0 };
@@ -189,11 +202,6 @@ void Grid::initialiseMap()
 			}
 
 			count++;
-		/*	m_cellId[count].setFont(m_font);
-			m_cellId[count].setCharacterSize(6);
-			m_cellId[count].setFillColor(sf::Color::White);
-			m_cellId[count].setString(std::to_string(count));
-			m_cellId[count].setPosition(cellPositions);*/
 			m_cellsArray.push_back(cell);// pushing back the cell
 		}
 	}
@@ -229,7 +237,11 @@ void Grid::update(sf::RenderWindow& t_window) // update method
 {
 	makeStratPos(t_window);
 	makeEndPos(t_window);
-
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+	{
+		resetPoints();
+		resets = true;
+	}
 }
 
 int Grid::makeStratPos(sf::RenderWindow& t_window)
@@ -276,9 +288,11 @@ int Grid::makeEndPos(sf::RenderWindow& t_window)
 				notTraversalsCost();
 
 				generateHeatMap();
-				
+
 				callAstar(startPointId, endPointId);
+			
 				return endPointId;
+				
 			}
 		}
 	}
@@ -382,8 +396,6 @@ void Grid::notTraversalsCost()
 
 void Grid::generateHeatMap()
 {
-	
-
 	for (int i = 0; i < 2500; i++)
 	{
 		if (m_cellsArray.at(i).m_isPassable == true)
