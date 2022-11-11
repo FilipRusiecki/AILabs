@@ -69,6 +69,9 @@ public:
 	void setColor(sf::Vector3f t_RGBValue);
 	sf::RectangleShape m_shape;
 
+	sf::RectangleShape vectorline;
+
+
 	std::vector<int> m_neighbours;
 
 };
@@ -100,11 +103,12 @@ public:
 	void horizontalCells(int t_point, int t_col, int t_cost);
 	void setCost(int t_p, int t_col, int t_cal, int t_cost);
 	void notTraversalsCost();
-	void callAstar(int t_start, int t_end);
+	void callFlow(int t_start, int t_end);
 	void render(sf::RenderWindow& t_window);
-	void aStar(Cell* start, Cell* dest);
+	void flowField(Cell* start, Cell* dest);
 	void generateHeatMap();
 	Cell* findCellPoint(sf::Vector2f point);
+	sf::Vector2f findEndPos(int t_id);
 
 	std::vector<Cell>& returnAllCells();
 

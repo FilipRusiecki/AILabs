@@ -26,6 +26,10 @@ Cell::Cell(sf::Vector2f t_position, int t_cellID, sf::Font& t_font)
 	//{
 	//	std::cout << "error with font file file";
 	//}
+	
+	vectorline.setFillColor(sf::Color::Red);
+	vectorline.setSize(sf::Vector2f(2.0f, 10.0f));
+	vectorline.setPosition(t_position.x + 8,t_position.y + 4);
 	m_cellcost.setFont(t_font);
 	m_id = t_cellID;
 	m_shape.setSize(sf::Vector2f(900 / 50, 900 / 50));
@@ -35,6 +39,11 @@ Cell::Cell(sf::Vector2f t_position, int t_cellID, sf::Font& t_font)
 	m_shape.setPosition(t_position);
 	m_isPassable = true;
 	m_previousCellId = -1;
+
+	
+
+
+
 }
 
 Cell* Cell::previous() const
@@ -67,6 +76,7 @@ void Cell::render(sf::RenderWindow& t_window, bool t_cpress)
 			t_window.draw(m_cellcost);
 		}
 	}
+		t_window.draw(vectorline);
 }
 
 void Cell::addCost(int m_cost)
@@ -165,14 +175,15 @@ void Grid::reset()
 
 void Grid::resetPoints()
 {
+	m_pathFound.clear();
 	//isStartPosSelected = false;
 	isEndPosSelected = false;
 	for (int i = 0; i < 200; i++)
 	{
+		
 		m_pathITtake[i].setPosition(0,0);
 		m_cellsArray.at(i).myPath = false;
 	}
-	m_pathFound.clear();
 	startPointId = 0;
 }
 
@@ -199,8 +210,9 @@ void Grid::initialiseMap()
 			{
 				cellPositions.x = 0;
 				cellPositions.y += 900 / 50; // adjusting cell position on screen - y axis
+				
 			}
-
+			
 			count++;
 			m_cellsArray.push_back(cell);// pushing back the cell
 		}
@@ -242,6 +254,7 @@ void Grid::update(sf::RenderWindow& t_window) // update method
 		resetPoints();
 		resets = true;
 	}
+	
 }
 
 int Grid::makeStratPos(sf::RenderWindow& t_window)
@@ -281,15 +294,21 @@ int Grid::makeEndPos(sf::RenderWindow& t_window)
 				endPointId = id;
 				for (int i = 0; i < 2500; i++) // 50 * 50 = 2500
 				{
+					sf::Vector2f endPos = findEndPos(endPointId);
+
+
+				  float dx = m_cellsArray[i].m_shape.getPosition().x - endPos.x;
+				  float dy = m_cellsArray[i].m_shape.getPosition().y - endPos.y;
+				  float rotation = (-atan2(dx, dy)) * 180 / 3.141;
+
 				  m_cellsArray[i].drawCost = true;
 				  m_cellsArray[i].m_isPassable = true;
+				  m_cellsArray[i].vectorline.setRotation(rotation);
 				}
 				makeCost();
 				notTraversalsCost();
-
 				generateHeatMap();
-
-				callAstar(startPointId, endPointId);
+				callFlow(startPointId, endPointId);
 			
 				return endPointId;
 				
@@ -413,13 +432,13 @@ void Grid::generateHeatMap()
 	}
 }
 
-void Grid::callAstar(int t_start, int t_end)
+void Grid::callFlow(int t_start, int t_end)
 {
 	Cell* start;
 	Cell* end;
 	start = &returnCell(t_start);
 	end = &returnCell(t_end);
-	aStar(start,end);
+	flowField(start,end);
 	int i = 0;
 	int index = end->m_id;
 	m_pathITtake[i].setPosition(m_cellsArray.at(index).m_shape.getPosition());
@@ -444,9 +463,9 @@ std::vector<Cell>& Grid::returnAllCells() // returning all the cells
 }
 
 
-//A Star Algorithm
 
-void Grid::aStar(Cell* start, Cell* dest)
+
+void Grid::flowField(Cell* start, Cell* dest)
 {
 	Cell* s = start; // s start node
 	Cell* goal = dest; //g goal node
@@ -462,8 +481,6 @@ void Grid::aStar(Cell* start, Cell* dest)
 
 		int xTwo = goal->m_centreX;
 		int yTwo = goal->m_centreY;
-
-		//m_cellsArray[i].m_h = abs(xTwo - xOne) + abs(yTwo - yOne);  //Calculate h[v]
 
 		m_cellsArray[i].myCost = dist / 10;  //Initialise g[v] to infinity
 		m_cellsArray[i].setPrevious(nullptr);
@@ -537,6 +554,17 @@ Cell* Grid::findCellPoint(sf::Vector2f point)
 		}
 	}
 	return nullptr;
+}
+
+sf::Vector2f Grid::findEndPos(int t_id)
+{
+	for (int i = 0; i < m_cellsArray.size(); i++)
+	{
+
+		return m_cellsArray.at(t_id).m_shape.getPosition();
+		
+	}
+
 }
 
 void Grid::render(sf::RenderWindow& t_window) // rendering the grid
