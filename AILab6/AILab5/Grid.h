@@ -109,6 +109,15 @@ public:
 	void generateHeatMap();
 	Cell* findCellPoint(sf::Vector2f point);
 	sf::Vector2f findEndPos(int t_id);
+	void makePath();
+	void clearPath();
+
+	sf::CircleShape player;
+
+	void movePlayer(std::stack<Cell*> t_path);
+	bool canPlayerMove;
+	std::stack<Cell*> playerPath;
+	int m = 1;
 
 	std::vector<Cell>& returnAllCells();
 

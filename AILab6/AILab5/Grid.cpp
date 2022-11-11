@@ -10,7 +10,6 @@ public:
 	}
 };
 
-
 Cell::Cell()
 {
 	
@@ -195,7 +194,8 @@ void Grid::initialiseMap()
 	{
 		std::cout << "error with font file file";
 	}
-	
+	player.setFillColor(sf::Color::White);
+	player.setRadius(10.0f);
 	sf::Vector2f cellPositions{0,0 };
 	int count = 0;
 	for (int row = 0; row < m_maxRows; row++)
@@ -223,14 +223,19 @@ void Grid::initialiseMap()
 	for (int index = 0; index < numberOfNonTraversals; index++)
 	{
 		randomCellId = rand() % 2500;
-		m_notTraversal[index].setSize(sf::Vector2f(18.0f, 18.0f));
-		m_notTraversal[index].setFillColor(sf::Color::Black);
+		//m_notTraversal[index].setSize(sf::Vector2f(18.0f, 18.0f));
+		//m_notTraversal[index].setFillColor(sf::Color::Black);
 
-		m_pathITtake[index].setSize(sf::Vector2f(18.0f, 18.0f));
-		m_pathITtake[index].setFillColor(sf::Color::Yellow);
+		//m_pathITtake[index].setSize(sf::Vector2f(18.0f, 18.0f));
+		//m_pathITtake[index].setFillColor(sf::Color::Yellow);
+		
+		/*m_notTraversal[index].setPosition((m_cellsArray.at(randomCellId).m_shape.getPosition()));
+		m_cellsArray.at(randomCellId).setMarked(true);*/
 
-		m_notTraversal[index].setPosition((m_cellsArray.at(randomCellId).m_shape.getPosition()));
-		m_cellsArray.at(randomCellId).setMarked(true);
+
+		m_cellsArray.at(randomCellId).m_shape.setFillColor(sf::Color::Black);
+		m_cellsArray.at(randomCellId).m_shape.setSize(sf::Vector2f(18.0f, 18.0f));
+		m_cellsArray.at(randomCellId).m_isPassable = false;
 	}
 
 
@@ -254,7 +259,13 @@ void Grid::update(sf::RenderWindow& t_window) // update method
 		resetPoints();
 		resets = true;
 	}
-	
+	if (canPlayerMove == true)
+	{
+		if (player.getPosition() != m_cellsArray.at(endPointId).m_shape.getPosition())
+		{
+			movePlayer(playerPath);
+		}
+	}
 }
 
 int Grid::makeStratPos(sf::RenderWindow& t_window)
@@ -263,6 +274,13 @@ int Grid::makeStratPos(sf::RenderWindow& t_window)
 	{
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
+			for (int i = 0; i < m_cellsArray.size(); i++)
+			{
+				if (m_cellsArray.at(i).marked() == true)
+				{
+					m_cellsArray.at(i).m_marked = false;
+				}
+			}
 			sf::Vector2f translated_pos = sf::Vector2f{ sf::Mouse::getPosition(t_window) };
 			int xPos = translated_pos.x / 18; int yPos = translated_pos.y / 18;
 			float id = yPos * 50;
@@ -270,7 +288,7 @@ int Grid::makeStratPos(sf::RenderWindow& t_window)
 			if (m_cellsArray.at(id).marked() == false)
 			{
 				m_cellsArray.at(id).m_shape.setFillColor(sf::Color::White);
-				isStartPosSelected = true;
+				isStartPosSelected = false;
 				startPointId = id;
 				return startPointId;
 			}
@@ -290,7 +308,7 @@ int Grid::makeEndPos(sf::RenderWindow& t_window)
 			if (m_cellsArray.at(id).marked() == false)
 			{
 			
-				isEndPosSelected = true;
+				isEndPosSelected = false;
 				endPointId = id;
 				for (int i = 0; i < 2500; i++) // 50 * 50 = 2500
 				{
@@ -302,14 +320,17 @@ int Grid::makeEndPos(sf::RenderWindow& t_window)
 				  float rotation = (-atan2(dx, dy)) * 180 / 3.141;
 
 				  m_cellsArray[i].drawCost = true;
-				  m_cellsArray[i].m_isPassable = true;
+				//  m_cellsArray[i].m_isPassable = true;
 				  m_cellsArray[i].vectorline.setRotation(rotation);
 				}
 				makeCost();
 				notTraversalsCost();
 				generateHeatMap();
+				clearPath();
 				callFlow(startPointId, endPointId);
-			
+				player.setPosition(playerPath.top()->m_shape.getPosition());
+
+				makePath();
 				return endPointId;
 				
 			}
@@ -417,11 +438,26 @@ void Grid::generateHeatMap()
 {
 	for (int i = 0; i < 2500; i++)
 	{
+		if (m_cellsArray.at(i).m_isPassable == false)
+		{
+			m_cellsArray.at(i).m_shape.setFillColor(sf::Color::Black);
+
+		}
+		else if (m_cellsArray.at(i).m_isPassable == true)
+		{
+			int reverseColour = 7 * m_cellsArray.at(i).myCost;
+			sf::Color newColour(0.0f, 0.0f, 255.0f - reverseColour);
+			m_cellsArray.at(i).m_shape.setFillColor(newColour);
+		}
+
+	}
+	/*for (int i = 0; i < 2500; i++)
+	{
 		if (m_cellsArray.at(i).m_isPassable == true)
 		{
 			if (m_cellsArray.at(i).myPath == false)
 			{
-				sf::Vector3f colourValue = { 0.0f,0.0f, 255.0f - (m_cellsArray.at(i).getCost() * 8) }; //{ 0.0f ,0.0f, 50.0f + (m_cellsArray.at(i).myCost * 8) };
+				sf::Vector3f colourValue = { 0.0f,0.0f, 255.0f - (m_cellsArray.at(i).getCost() * 8) }; 
 				if (colourValue.z < 100)
 				{
 					colourValue.z = 100;
@@ -429,7 +465,7 @@ void Grid::generateHeatMap()
 				m_cellsArray.at(i).setColor(colourValue);
 			}
 		}
-	}
+	}*/
 }
 
 void Grid::callFlow(int t_start, int t_end)
@@ -536,6 +572,29 @@ void Grid::flowField(Cell* start, Cell* dest)
 						mychild->setMarked(true); //Mark Child
 						
 					} //end if
+						Cell* pathNode = goal;
+						Cell* pathNode2 = goal;
+						while (pathNode->previous() != nullptr)
+						{
+							playerPath.push(pathNode);
+							pathNode = pathNode->previous();
+							sf::Vector3f colourValue = { 200.0f,255.0f,0.0f };
+							pathNode->setColor(colourValue);
+						}
+
+						//for (auto i = 49; i >= 0; i--)
+						//{
+						//    playerPath2[i] = pathNode2->getID();
+						//    pathNode2 = pathNode2->previous();
+						//}
+
+						canPlayerMove = true;
+
+
+
+
+
+
 				}
 
 			}//end for
@@ -562,10 +621,55 @@ sf::Vector2f Grid::findEndPos(int t_id)
 	{
 
 		return m_cellsArray.at(t_id).m_shape.getPosition();
-		
 	}
-
+ 
 }
+
+void Grid::makePath()
+{
+	for (int i = 0; i < m_pathFound.size(); i++)
+	{
+		m_cellsArray.at(m_pathFound.at(i)).m_shape.setFillColor(sf::Color::Yellow);
+	}
+}
+
+void Grid::clearPath()
+{
+	for (int i = 0; i < m_pathFound.size(); i++)
+	{
+		int reverseColour = 5 * m_cellsArray.at(i).myCost;
+		sf::Color newColour(0.0f, 0.0f, 255.0f - reverseColour);
+		m_cellsArray.at(i).m_shape.setFillColor(newColour);
+		m_cellsArray.at(m_pathFound.at(i)).m_shape.setFillColor(newColour);
+	}
+	m_pathFound.clear();
+}
+
+void Grid::movePlayer(std::stack<Cell*> t_path)
+{
+	if (player.getPosition().x > t_path.top()->m_shape.getPosition().x)
+	{
+		player.move(-1, 0);
+	}
+	if (player.getPosition().x < t_path.top()->m_shape.getPosition().x)
+	{
+		player.move(1, 0);
+	}
+	if (player.getPosition().y > t_path.top()->m_shape.getPosition().y)
+	{
+		player.move(0, -1);
+	}
+	if (player.getPosition().y < t_path.top()->m_shape.getPosition().y)
+	{
+		player.move(0, 1);
+	}
+	if (player.getPosition() == t_path.top()->m_shape.getPosition())
+	{
+		playerPath.pop();
+	}
+}
+
+
 
 void Grid::render(sf::RenderWindow& t_window) // rendering the grid
 {
@@ -576,9 +680,10 @@ void Grid::render(sf::RenderWindow& t_window) // rendering the grid
 		//t_window.draw(m_cellsArray.at(index).m_cellcost);
 		//t_window.draw(m_cellId[index]);
 	}
-	for (int index = 0; index < numberOfNonTraversals; index++)
-	{
-		t_window.draw(m_notTraversal[index]);
-		t_window.draw(m_pathITtake[index]);
-	}
+	t_window.draw(player);
+	//for (int index = 0; index < numberOfNonTraversals; index++)
+	//{
+	//	t_window.draw(m_notTraversal[index]);
+	//	t_window.draw(m_pathITtake[index]);
+	//}
 }
