@@ -9,7 +9,7 @@ void Player::init()
 {
 	circle.setRadius(10);
 	circle.setFillColor(sf::Color::Magenta);
-	circle.setPosition(900, 550);
+	circle.setPosition(100, 550);
 }
 
 void Player::update(sf::Time t_deltaTime)
