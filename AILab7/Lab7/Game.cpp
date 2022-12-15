@@ -256,7 +256,7 @@ double Game::FuzzyTrapezoid(double v, double x0, double x1, double x2, double x3
 	{
 		result = ((x3 - x) / (x3 - x2));
 	}
-	return 0.0;
+	return result;
 }
 
 double Game::FuzzyTriangle(double v, double x0, double x1, double x2)
@@ -278,8 +278,8 @@ double Game::FuzzyTriangle(double v, double x0, double x1, double x2)
 	}
 	else {
 		result = ((x2 - x) / (x2 - x1));
-		return result;
 	}
+		return result;
 }
 
 double Game::FuzzyGrade(double v, double x0, double x1)
