@@ -239,7 +239,6 @@ double Game::FuzzyTrapezoid(double v, double x0, double x1, double x2, double x3
 	double result = 0;
 	double x = v;
 
-
 	if ((x <= x0) || (x >= x3))
 	{
 		result = 0.0;
@@ -323,7 +322,7 @@ void Game::settingRangeAndForce()
 	tinyForce = FuzzyTriangle(force,0,4,9);
 	smallForce = FuzzyTrapezoid(force,2,9,15,18);
 	moderateForce = FuzzyTrapezoid(force,15,18,21,25);
-	largeForce = FuzzyGrade(force,21,30);
+	largeForce = FuzzyGrade(force,21,25);
 
 
 
@@ -335,7 +334,8 @@ void Game::settingRangeAndForce()
 
 void Game::defuzzification()
 {
-	double nDeploy = (lowDanger * 10 + moderateDanger * 30 + highDanger * 50) / (lowDanger + moderateDanger + highDanger);
+	double nDeploy = 0;
+	nDeploy = (lowDanger * 10 + moderateDanger * 30 + highDanger * 50) / (lowDanger + moderateDanger + highDanger);
 	Ui3.setString("defuzz: " + std::to_string(nDeploy));
 }
 
