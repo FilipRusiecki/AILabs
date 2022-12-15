@@ -4,6 +4,7 @@
 #include <iostream>
 
 
+
 Game::Game() :
 	m_window{ sf::VideoMode{ 1920U, 1080U, 32U }, "FuzzyGame" },
 	m_exitGame{ false } //when true game will exit
@@ -228,10 +229,10 @@ void Game::threatLevelApplication()
 	moderateDanger = FuzzyOR(FuzzyOR(FuzzyAND(closeRange, tinyForce), FuzzyAND(mediumRange, moderateForce)), FuzzyAND(largeRange, largeForce));
 	highDanger = FuzzyOR(FuzzyAND(closeRange, FuzzyNOT(tinyForce)), FuzzyAND(mediumRange, largeForce));
 
+
 	Ui4.setString("LowDanger: " + std::to_string(lowDanger));
 	Ui5.setString("MidDanger: " + std::to_string(moderateDanger));
 	Ui6.setString("HighDanger: " + std::to_string(highDanger));
-
 }
 
 double Game::FuzzyTrapezoid(double v, double x0, double x1, double x2, double x3)
@@ -241,11 +242,11 @@ double Game::FuzzyTrapezoid(double v, double x0, double x1, double x2, double x3
 
 	if ((x <= x0) || (x >= x3))
 	{
-		result = 0.0;
+		result = 0;
 	}
 	else if ((x >= x1) && (x <= x2))
 	{
-		result = 1.0;
+		result = 1;
 	}
 	else if ((x > x0) && (x < x1))
 	{
@@ -319,16 +320,16 @@ double Game::FuzzyNOT(double A)
 void Game::settingRangeAndForce()
 {
 
-	tinyForce = FuzzyTriangle(force,0,4,9);
-	smallForce = FuzzyTrapezoid(force,2,9,15,18);
-	moderateForce = FuzzyTrapezoid(force,15,18,21,25);
-	largeForce = FuzzyGrade(force,21,25);
+	tinyForce = FuzzyTriangle(force, 0, 4, 9);
+	smallForce = FuzzyTrapezoid(force, 2, 9, 15, 18);
+	moderateForce = FuzzyTrapezoid(force, 15, 18, 21, 25);
+	largeForce = FuzzyGrade(force, 21, 30);
+
+	closeRange = FuzzyTriangle(range, 200, 500, 800);
+	mediumRange = FuzzyTrapezoid(range, 500, 800, 1200, 1400);
+	largeRange = FuzzyGrade(range, 1300, 1700);
 
 
-
-	closeRange = FuzzyTriangle(range,200,500,800);
-	mediumRange = FuzzyTrapezoid(range,500,800,1200,1400);
-	largeRange = FuzzyGrade(range,1200,1700);
 
 }
 
