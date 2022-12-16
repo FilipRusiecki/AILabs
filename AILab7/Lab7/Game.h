@@ -71,6 +71,15 @@ private:
 	sf::Text Ui4;
 	sf::Text Ui5;
 	sf::Text Ui6;
+	sf::Text Ui7;
+	sf::Text Ui8;
+	sf::Text Ui9;
+	sf::Text Ui10;
+	sf::Text Ui11;
+	sf::Text Ui12;
+	sf::Text Ui13;
+
+
 
 
 

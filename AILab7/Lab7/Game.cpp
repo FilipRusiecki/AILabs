@@ -102,6 +102,18 @@ void Game::render()
 	m_window.draw(Ui4);
 	m_window.draw(Ui5);
 	m_window.draw(Ui6);
+	m_window.draw(Ui7);
+	m_window.draw(Ui8);
+	m_window.draw(Ui9);
+	m_window.draw(Ui10);
+	m_window.draw(Ui11);
+	m_window.draw(Ui12);
+	m_window.draw(Ui13);
+
+
+
+
+
 
 
 	myPlayer.draw(m_window);
@@ -190,12 +202,78 @@ void Game::setupFontAndText()
 	Ui6.setFillColor(sf::Color::Cyan);
 	Ui6.setOutlineThickness(1.0f);
 	Ui6.setOutlineColor(sf::Color::Black);
+
+	Ui7.setFont(m_font);
+	Ui7.setString("Ui7");
+	Ui7.setStyle(sf::Text::Bold);
+	Ui7.setPosition(48.0f, 830.0f);
+	Ui7.setCharacterSize(30U);
+	Ui7.setFillColor(sf::Color::Cyan);
+	Ui7.setOutlineThickness(1.0f);
+	Ui7.setOutlineColor(sf::Color::Black);
+
+	Ui8.setFont(m_font);
+	Ui8.setString("Ui8");
+	Ui8.setStyle(sf::Text::Bold);
+	Ui8.setPosition(48.0f, 860.0f);
+	Ui8.setCharacterSize(30U);
+	Ui8.setFillColor(sf::Color::Cyan);
+	Ui8.setOutlineThickness(1.0f);
+	Ui8.setOutlineColor(sf::Color::Black);
+
+	Ui9.setFont(m_font);
+	Ui9.setString("Ui9");
+	Ui9.setStyle(sf::Text::Bold);
+	Ui9.setPosition(48.0f, 890.0f);
+	Ui9.setCharacterSize(30U);
+	Ui9.setFillColor(sf::Color::Cyan);
+	Ui9.setOutlineThickness(1.0f);
+	Ui9.setOutlineColor(sf::Color::Black);
+
+	Ui10.setFont(m_font);
+	Ui10.setString("Ui10");
+	Ui10.setStyle(sf::Text::Bold);
+	Ui10.setPosition(48.0f, 920.0f);
+	Ui10.setCharacterSize(30U);
+	Ui10.setFillColor(sf::Color::Cyan);
+	Ui10.setOutlineThickness(1.0f);
+	Ui10.setOutlineColor(sf::Color::Black);
+
+	Ui11.setFont(m_font);
+	Ui11.setString("Ui11");
+	Ui11.setStyle(sf::Text::Bold);
+	Ui11.setPosition(48.0f, 950.0f);
+	Ui11.setCharacterSize(30U);
+	Ui11.setFillColor(sf::Color::Cyan);
+	Ui11.setOutlineThickness(1.0f);
+	Ui11.setOutlineColor(sf::Color::Black);
+
+
+	Ui12.setFont(m_font);
+	Ui12.setString("Ui12");
+	Ui12.setStyle(sf::Text::Bold);
+	Ui12.setPosition(48.0f, 980.0f);
+	Ui12.setCharacterSize(30U);
+	Ui12.setFillColor(sf::Color::Cyan);
+	Ui12.setOutlineThickness(1.0f);
+	Ui12.setOutlineColor(sf::Color::Black);
+
+
+	Ui13.setFont(m_font);
+	Ui13.setString("Ui13");
+	Ui13.setStyle(sf::Text::Bold);
+	Ui13.setPosition(48.0f, 1010.0f);
+	Ui13.setCharacterSize(30U);
+	Ui13.setFillColor(sf::Color::Cyan);
+	Ui13.setOutlineThickness(1.0f);
+	Ui13.setOutlineColor(sf::Color::Black);
+
 }
 
 
 void Game::setupSprite()
 {
-	UiBox.setSize(sf::Vector2f(330,240));
+	UiBox.setSize(sf::Vector2f(330,400));
 	UiBox.setFillColor(sf::Color(110, 115, 111, 60));
 	UiBox.setPosition(43,646);
 }
@@ -325,11 +403,19 @@ void Game::settingRangeAndForce()
 	moderateForce = FuzzyTrapezoid(force, 15, 18, 21, 25);
 	largeForce = FuzzyGrade(force, 21, 30);
 
+	Ui7.setString("tinyForce: " + std::to_string(tinyForce));
+	Ui8.setString("smallForce: " + std::to_string(smallForce));
+	Ui9.setString("moderateForce: " + std::to_string(moderateForce));
+	Ui10.setString("largeForce: " + std::to_string(largeForce));
+
+
 	closeRange = FuzzyTriangle(range, 200, 500, 800);
 	mediumRange = FuzzyTrapezoid(range, 500, 800, 1200, 1400);
 	largeRange = FuzzyGrade(range, 1300, 1700);
 
-
+	Ui11.setString("closeRange: " + std::to_string(closeRange));
+	Ui12.setString("mediumRange: " + std::to_string(mediumRange));
+	Ui13.setString("largeRange: " + std::to_string(largeRange));
 
 }
 
