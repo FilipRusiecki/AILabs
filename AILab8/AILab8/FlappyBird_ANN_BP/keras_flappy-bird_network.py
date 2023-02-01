@@ -34,7 +34,7 @@ model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # fit the keras model on the dataset
-model.fit(X, y, epochs=30, batch_size=100)	# Try playing with these hyperparameters to see what the effect is.
+model.fit(X, y, epochs=1000, batch_size=1000)	# Try playing with these hyperparameters to see what the effect is.
 
 # evaluate the keras model
 _, accuracy = model.evaluate(X, y)

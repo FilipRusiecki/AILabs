@@ -99,8 +99,8 @@ void Game::loadTFBrain(int bird)
 	int index = 0;
 	float weight = 0.0f;
 
-//	myWeightsFile.open("flappy_tf_weights.csv");
-	myWeightsFile.open("flappy_tf_weights-21k-Acc76point84.csv");
+	myWeightsFile.open("flappy_tf_weights.csv");
+	//myWeightsFile.open("flappy_tf_weights-21k-Acc76point84.csv");
 //	myWeightsFile.open("flappy_tf_weights-70k-Acc78point44.csv");
 
 	while (!myWeightsFile.eof())
